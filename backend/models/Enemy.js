@@ -16,7 +16,7 @@ class Enemy extends Entity {
     // Fetch a question from the database
     async generateQuestion() {
 
-        return await questionService.getRandomQuestion(this.world);
+        return await questionService.fetchRandomQuestion(this.world);
 
     }
 
