@@ -5,11 +5,15 @@
 
 const questionRepository = require("../repositories/questionRepository");
 
-// Returns a question based on the world type
-async function getQuestion(world) {
+class questionService {
 
-    return await questionRepository.getByWorld(world);
-    
+    static async fetchRandomQuestion(world) {
+
+        return await questionRepository.getRandomQuestion(world);
+
+    }
+
 }
 
-module.exports = { getQuestion };
+module.exports = questionService;
+

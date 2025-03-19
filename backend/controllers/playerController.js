@@ -6,29 +6,42 @@
 
 const playerService = require("../services/playerService");
 
-// Attempts to find player data in db
-async function getPlayer(req, res) {
+class playerController {
 
-    try {
-        const player = await playerService.getPlayer(req.params.username);
-        res.json(player);
-    } catch (error) {
-        res.status(500).json({ error: "Server error" });
+    static async battle(req,res) {
+
+        try {
+            const player = await playerService.processBattleResult(req.body.player, req.body.playerAnswer, req.body.question, req.body.enemy);
+            res.json({ message: "battle-commenced", player });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+
+
+    }
+
+    static async moveToNextLevel(req, res) {
+
+        try {
+            const player = await playerService.moveToNextLevel(req.body.name);
+            res.json({ message: "next-level", player });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+
+    }
+
+    static async returnToTutorial(req, res) {
+
+        try {
+            const player = await playerService.returnToTutorial(req.body.name);
+            res.json({ message: "return-to-tutorial", player });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+
     }
 
 }
 
-// Attempts to update player data in db
-async function updateProgress(req, res) {
-
-    try {
-        const { username, world, level } = req.body;
-        await playerService.updatePlayerProgress(username, world, level);
-        res.json({ message: "Progress updated successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Server error" });
-    }
-
-}
-
-module.exports = { getPlayer, updateProgress };
+module.exports = playerController;

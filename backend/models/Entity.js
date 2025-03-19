@@ -6,21 +6,23 @@
 class Entity {
 
     // Constructor:
-    constructor(name, health, isSlain, world) {
+    constructor(name, health, world) {
         this.name = name;
         this.health = health;
-        this.isSlain = isSlain;
         this.world = world;
     }
 
     // Reduces health and determines if the entity has been slain:
     takeDamage() {
-        this.health -= 1;
-        if (this.health <= 0) {
+        
+        if (this.health > 0) {
+            this.health -= 1;
+            if (this.health <= 0) {
             this.health = 0;
-            this.isSlain = true;
             console.log(`${this.name} has been slain!`);
+            }
         }
+        
     }
 }
 
