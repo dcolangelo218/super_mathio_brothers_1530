@@ -53,7 +53,6 @@ const GameCanvas = () => {
     const enterButScaleSpeed = 0.0025; // Controls how fast it pulses
     let animationFrameId;
 
-
     /**
      * A function that updates the main screen and allows us to fetch component data.
      */
@@ -194,16 +193,62 @@ const GameCanvas = () => {
         const centerY = (mgCanvas.height - mapImage.height) / 2;
         mgCtx.drawImage(mapImage, centerX, centerY, mapImage.width, mapImage.height);
 
-        // Draw in the initial monitors:
-        // Plans to animate these later:
-        const topMonitorX = (uiCanvas.width - topMonitor.width) / 2 + 200;
-        const topMonitorY = (uiCanvas.height - topMonitor.height) / 2;
-        uiCtx.drawImage(topMonitor, topMonitorX, topMonitorY, topMonitor.width, topMonitor.height);
-        const bottomMonitorX = (uiCanvas.width - bottomMonitor.width) / 2 + 200;
-        const bottomMonitorY = (uiCanvas.height - bottomMonitor.height) / 2;
-        uiCtx.drawImage(bottomMonitor, bottomMonitorX, bottomMonitorY, bottomMonitor.width, bottomMonitor.height);
+        // Animate in the initial monitors:
+        animateMonitors(uiCtx, uiCanvas);
 
     };
+
+    /**
+     * A function for animating monitors sliding into frame
+     */
+    
+    function animateMonitors(ctx, canvas) {
+
+        // Define Variables for monitors animation:
+        let topMonitorCurrY = -topMonitor.height;
+        const topMonitorTargetY = 0;
+        let bottomMonitorCurrY = canvas.height;
+        const bottomMonitorTargetY = canvas.height - bottomMonitor.height;
+        const topSpeed = 3.8;
+        const bottomSpeed = 7.5;
+
+        // Clear the UI canvas:
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Continue the animation:
+        requestAnimationFrame(step);
+
+        // Create the step function for the actual animation:
+        function step() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+            const topMonitorX = (canvas.width - topMonitor.width) / 2 + 200;
+            const bottomMonitorX = (canvas.width - bottomMonitor.width) / 2 + 200;
+            ctx.drawImage(topMonitor, topMonitorX, topMonitorCurrY);
+            ctx.drawImage(bottomMonitor, bottomMonitorX, bottomMonitorCurrY);
+        
+            let animating = false;
+        
+            if (topMonitorCurrY < topMonitorTargetY - 0.5) {
+                topMonitorCurrY += (topMonitorTargetY - topMonitorCurrY) * 0.1;
+                animating = true;
+            } else {
+                topMonitorCurrY = topMonitorTargetY; 
+            }
+        
+            if (bottomMonitorCurrY > bottomMonitorTargetY + 0.5) {
+                bottomMonitorCurrY += (bottomMonitorTargetY - bottomMonitorCurrY) * 0.1;
+                animating = true;
+            } else {
+                bottomMonitorCurrY = bottomMonitorTargetY;
+            }
+        
+            if (animating) {
+                requestAnimationFrame(step);
+            }
+        }
+
+    }
 
     /**
      * A function to render the Algebraia map
