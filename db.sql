@@ -13,7 +13,7 @@ drop table if exists players cascade;
 
 --Questions
 create domain question_type as varchar(4)
-    check( value in('ALG1', 'PHYS', 'STAT', 'ALG2', 'CALC'));
+    check( value in('ALG', 'PHYS', 'STAT', 'CALC'));
 create table questions(
     type question_type not null,
     question text not null,
