@@ -6,20 +6,20 @@ import { useEffect, useRef, useState } from "react";
 import "./GameCanvas.css";
 
 /**
- * Where the game is displayed.
+ * Where the Title Screen and World Map are displayed.
  * 
  * @returns The updated canvas based on it's state.
  */
-const GameCanvas = () => {
+const TitleAndWorldCanvas = () => {
 
-    // Load the canvas reference objects and assign the initial screen state:
+    // Load the canvas reference objects and assign the initial states:
     const uiCanvasRef = useRef(null); // UI Canvas
     const bgCanvasRef = useRef(null); // Background Canvas
     const mgCanvasRef = useRef(null); // Middle ground canvas (not UI asset, not default background)
     const currentMusicRef = useRef(null) // References the current music playing
-    const [screenState, setScreenState] = useState("Title"); // State will either be "Title" or "WorldMap"
+    const [screenState, setScreenState] = useState("Title"); // State will either be "Title", "WorldMap", "Level", or "CatBot"
     const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button
-    const [monitorsState, setMonitorsState] = useState("Algebraia"); // Algebraia, Statstrider, Calcomet, Physix
+    const [worldSelected, setSelectedWorld] = useState("None"); // Tracks if a level has been selected, "Algebra", "Stats", "Calc", or "Physics"
 
     // Pre-Load ALL images:
     const backgroundImage = new Image();
@@ -152,34 +152,6 @@ const GameCanvas = () => {
     };
 
     /**
-     * A function for animating the pulse of the enter button.
-     */
-    function animatePressEnter(ctx, canvas) {
-
-        // Clear the UI canvas:
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-        // Update the scale
-        enterButScale += enterButDirection * enterButScaleSpeed;
-        if (enterButScale > enterButMaxScale || enterButScale < enterButMinScale) {
-            enterButDirection *= -1; // Reverse scaling direction
-        }
-    
-        // Calculate scaled size and position
-        const enterButWidth = enterButton.width * enterButScale;
-        const enterButHeight = enterButton.height * enterButScale;
-        const enterXPos = (canvas.width - enterButWidth) / 2;
-        const enterYPos = (canvas.height - enterButHeight) / 2;
-    
-        ctx.drawImage(enterButton, enterXPos, enterYPos, enterButWidth, enterButHeight);
-    
-        // Continue the animation
-        animationFrameId = requestAnimationFrame(() => animatePressEnter(ctx, canvas));
-
-    }
-    
-
-    /**
      * A function for rendering the default background with the world map. 
      */
     function drawWorldMap(mgCtx, uiCtx, mgCanvas, uiCanvas) {
@@ -199,6 +171,33 @@ const GameCanvas = () => {
     };
 
     /**
+     * A function for animating the pulse of the enter button.
+     */
+    function animatePressEnter(uiCtx, uiCanvas) {
+
+        // Clear the UI canvas:
+        uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
+    
+        // Update the scale
+        enterButScale += enterButDirection * enterButScaleSpeed;
+        if (enterButScale > enterButMaxScale || enterButScale < enterButMinScale) {
+            enterButDirection *= -1; // Reverse scaling direction
+        }
+    
+        // Calculate scaled size and position
+        const enterButWidth = enterButton.width * enterButScale;
+        const enterButHeight = enterButton.height * enterButScale;
+        const enterXPos = (uiCanvas.width - enterButWidth) / 2;
+        const enterYPos = (uiCanvas.height - enterButHeight) / 2;
+    
+        uiCtx.drawImage(enterButton, enterXPos, enterYPos, enterButWidth, enterButHeight);
+    
+        // Continue the animation
+        animationFrameId = requestAnimationFrame(() => animatePressEnter(uiCtx, uiCanvas));
+
+    }
+
+    /**
      * A function for animating monitors sliding into frame
      */
     
@@ -209,8 +208,6 @@ const GameCanvas = () => {
         const topMonitorTargetY = 0;
         let bottomMonitorCurrY = canvas.height;
         const bottomMonitorTargetY = canvas.height - bottomMonitor.height;
-        const topSpeed = 3.8;
-        const bottomSpeed = 7.5;
 
         // Clear the UI canvas:
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -269,6 +266,7 @@ const GameCanvas = () => {
         const x = (uiCanvas.width - algebraiaLevels.width) / 2 + 200;
         const y = (uiCanvas.height - algebraiaLevels.height) / 2;
         uiCtx.drawImage(algebraiaLevels, x, y, algebraiaLevels.width, algebraiaLevels.height);
+        setSelectedWorld("Algebra");
 
     }
     /**
@@ -290,6 +288,7 @@ const GameCanvas = () => {
         const x = (uiCanvas.width - statstriderLevels.width) / 2 + 200;
         const y = (uiCanvas.height - statstriderLevels.height) / 2;
         uiCtx.drawImage(statstriderLevels, x, y, statstriderLevels.width, statstriderLevels.height);
+        setSelectedWorld("Stats");
 
     }
     /**
@@ -311,6 +310,7 @@ const GameCanvas = () => {
         const x = (uiCanvas.width - calcometLevels.width) / 2 + 200;
         const y = (uiCanvas.height - calcometLevels.height) / 2;
         uiCtx.drawImage(calcometLevels, x, y, calcometLevels.width, calcometLevels.height);
+        setSelectedWorld("Calc");
         
     }
     /**
@@ -332,6 +332,7 @@ const GameCanvas = () => {
         const x = (uiCanvas.width - physixLevels.width) / 2 + 200;
         const y = (uiCanvas.height - physixLevels.height) / 2;
         uiCtx.drawImage(physixLevels, x, y, physixLevels.width, physixLevels.height);
+        setSelectedWorld("Physics");
         
     }
 
@@ -347,10 +348,11 @@ const GameCanvas = () => {
         // Toggle music:
         if (isMuted) {
             music.play().catch(err => console.warn("Autoplay failed:", err));
-          } else {
+          } 
+        else {
             music.pause();
-          }
-          setIsMuted(!isMuted);
+        }
+        setIsMuted(!isMuted);
 
     }
 
@@ -372,7 +374,7 @@ const GameCanvas = () => {
 
     }
 
-    // Return the current canvases:
+    // Return the current canvases and any buttons:
     return (
         <div className = "canvas-container">
             {/* Background Canvas (always drawn) */}
@@ -395,6 +397,20 @@ const GameCanvas = () => {
             cursor: "pointer"
             }}
             />
+
+            {/* catBot Button */}
+            {worldSelected !== "None" && 
+            (<img
+            src= "/CatBotButton.png"
+            onClick={() => setScreenState("CatBot")}
+            style={{
+            position: "absolute",
+            top: "73.5%",
+            right: "37.75%",
+            zIndex: 4,
+            cursor: "pointer",
+            }}
+            />)}
 
             {/* Algebraia Button */}
             {screenState === "WorldMap" && 
@@ -457,4 +473,4 @@ const GameCanvas = () => {
 
 };
 
-export default GameCanvas;
+export default TitleAndWorldCanvas;

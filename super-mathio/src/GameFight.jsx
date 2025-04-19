@@ -3,7 +3,7 @@
  * These allow us to use effects and update the state.
  */
 import { useEffect, useRef, useState } from "react";
-import "./GameFight.css";
+import "./GameCanvas.css";
 
 /**
  * Where the game is displayed.
