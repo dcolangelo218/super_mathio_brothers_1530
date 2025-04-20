@@ -10,14 +10,13 @@ import "./GameCanvas.css";
  * 
  * @returns The updated canvas based on it's state.
  */
-const GameFight = () => {
+const CombatCanvas = ({ returnToMap, toggleMute, isMuted }) => {
 
     // Load the canvas reference objects and assign the initial screen state:
     const uiCanvasRef = useRef(null); // UI Canvas
     const bgCanvasRef = useRef(null); // Background Canvas
     const mgCanvasRef = useRef(null); // Middle ground canvas (not UI asset, not default background)
     const currentMusicRef = useRef(null) // References the current music playing
-    const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button; Note that the state will somehow have to carry over from GameCanvas
 
     // Pre-Loading images:
     const backgroundImage = new Image();
@@ -34,7 +33,7 @@ const GameFight = () => {
         // Sets the background canvas and it's attributes:
         const bgCanvas = bgCanvasRef.current;
         const bgCtx = bgCanvas.getContext("2d");
-        bgCanvas.width = 1920; //NOTE THE LEVEL BACKGROUNDS ARE NOT 1920 X 1080, FIGURE OUT WHAT TO SET THIS AND THE CSS FILE TO
+        bgCanvas.width = 1920; //NOTE THE LEVEL BACKGROUNDS ARE NOT 1920 X 1080
         bgCanvas.height = 1080;
 
          // Sets the middle ground canvas and it's attributes:
@@ -78,8 +77,51 @@ const GameFight = () => {
             <canvas ref={mgCanvasRef} style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }} />
             {/* UI Canvas (Only Updates UI elements) */}
             <canvas ref={uiCanvasRef} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }} />
+
+            <label>
+                Fight back!
+                <div className = "input-bar" style={{ zIndex: 4 }}>
+                    <div className = "input-bar button" style = {{ position: "relative", top: 0, left: 1, zIndex: 4}} />
+                    <div className = "input-bar input" />
+                </div>
+            </label>
+
+             {/* Music Start Button */}
+             <img
+            src={isMuted ? "/isMuted.png" : "/isNotMuted.png"}
+            alt={isMuted ? "Unmute" : "Mute"}
+            onClick={toggleMute}
+            style={{
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            zIndex: 5,
+            cursor: "pointer"
+            }}
+            />
+
+            {/* Return Button */}
+            <button
+                style={{
+                    position: "absolute",
+                    top: "20px",
+                    left: "20px",
+                    zIndex: 10,
+                    padding: "0.5rem 1rem",
+                    fontSize: "1rem",
+                    backgroundColor: "#444",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer"
+                }}
+                onClick={returnToMap} 
+                > ⬅ Back to Map
+            </button>
+
+
         </div>
     );
 };
 
-export default GameFight;
+export default CombatCanvas;

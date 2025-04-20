@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import CatBotCanvas from "./CatBotCanvas";
 import TitleCanvas from "./TitleCanvas";
 import MapCanvas from "./MapCanvas";
+import CombatCanvas from "./CombatCanvas";
 
 function App() {
 
@@ -107,6 +108,12 @@ function App() {
         )}
         {screenState === "CatBot" && (
             <CatBotCanvas returnToMap={() => setScreenState("Map")}
+            toggleMute={toggleMute}
+            isMuted={isMuted}
+            />
+        )}
+        {screenState === "Combat" && (
+            <CombatCanvas returnToMap={() => setScreenState("Map")}
             toggleMute={toggleMute}
             isMuted={isMuted}
             />
