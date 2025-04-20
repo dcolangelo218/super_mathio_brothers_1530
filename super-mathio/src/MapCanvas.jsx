@@ -11,7 +11,7 @@ import "./CatBotCanvas.jsx";
  * 
  * @returns The updated canvas based on it's state.
  */
-const MapCanvas = ({ onOpenCatBot, toggleMute, isMuted }) => {
+const MapCanvas = ({ onOpenCatBot, toggleMute, isMuted, currentWorld, currentLevel, onStartCombat}) => {
 
     // Load the canvas reference objects and assign the initial states:
     const uiCanvasRef = useRef(null); // UI Canvas
@@ -37,6 +37,11 @@ const MapCanvas = ({ onOpenCatBot, toggleMute, isMuted }) => {
     calcometLevels.src = "/CalcometLevels.png";
     const physixLevels = new Image();
     physixLevels.src = "/PhysixLevels.png";
+
+    const lockedLevel = new Image(); lockedLevel.src = "/PhysixLevels.png";
+    const unlockedLevel = new Image(); unlockedLevel.src = "/PhysixLevels.png";
+
+    const worldIndices = { Algebra: 1, Stats: 2, Calc: 3, Physics: 4 };
 
     /**
      * A function that updates the main screen and allows us to fetch component data.
@@ -324,6 +329,52 @@ const MapCanvas = ({ onOpenCatBot, toggleMute, isMuted }) => {
             cursor: "pointer",
             }}
             />
+
+            {/* Level Select Nodes */}
+            {worldSelected !== "None" &&
+                Array.from({ length: 5 }).map((_, i) => {
+                const worldIndex = worldIndices[worldSelected];
+                const unlocked =
+                    worldIndex < currentWorld ||
+                    (worldIndex === currentWorld && i < currentLevel);
+
+                return (
+                    <div
+                    key={i}
+                    style={{
+                        position: "absolute",
+                        top: "85%",
+                        left: `${47.5 + i * 6}%`,
+                        zIndex: 5,
+                        width: "auto",
+                        height: "auto",
+                    }}
+                    >
+                    {/* background silhouette */}
+                    <img
+                        src={unlocked ? "/UnlockedLevelNode.png" : "/LockedLevelNode.png"}
+                        alt=""
+                        style={{
+                        position: "absolute",
+                        transform: "scale(2)",
+                        filter: "brightness(0) invert(1)",
+                        pointerEvents: "none",
+                        }}
+                    />
+                    {/* clickable node */}
+                    <img
+                        src={unlocked ? "/UnlockedLevelNode.png" : "/LockedLevelNode.png"}
+                        alt={`Level ${i + 1}`}
+                        onClick={() => unlocked && onStartCombat(worldIndex, i)}
+                        style={{
+                        position: "absolute",
+                        transform: "scale(1.5)",
+                        cursor: unlocked ? "pointer" : "not-allowed",
+                        }}
+                    />
+                    </div>
+                );
+            })}
 
         </div>
     );

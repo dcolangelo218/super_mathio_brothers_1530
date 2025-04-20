@@ -19,14 +19,28 @@ const CombatCanvas = ({ returnToMap, toggleMute, isMuted }) => {
     const currentMusicRef = useRef(null) // References the current music playing
 
     // Pre-Loading images:
-    const backgroundImage = new Image();
-    backgroundImage.src = "/World 1.png";
+    const world1Background = new Image();
+    world1Background.src = "/World 1.png";
+    const world2Background = new Image();
+    world2Background.src = "/World 2.png";
+    const world3Background = new Image();
+    world3Background.src = "/World 3.png";
+    const world4Background = new Image();
+    world4Background.src = "/World 4.png";
+
     const playerImage = new Image();
     playerImage.src = "/PlayerImage.png";
     /*
     const enemyImage = new Image();
     enemyImage.src = "/[IMG NAME HERE].png";
     */
+
+    const backgroundImage =
+    world === 1 ? world1Background
+    : world === 2 ? world2Background
+    : world === 3 ? world3Background
+    : world === 4 ? world4Background
+    : world1Background;
 
     //Should run on initial render
     useEffect(() => {

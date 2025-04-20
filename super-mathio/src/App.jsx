@@ -14,6 +14,9 @@ function App() {
     const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button
     const currentMusicRef = useRef(null) // References the current music playing
     
+    const [currentWorld, setCurrentWorld] = useState(1);
+    const [currentLevel, setCurrentLevel] = useState(1);
+
     // Load ALL tracks only once:
     // Only create these once
     const titleAndMapTrack = useMemo(() => {
@@ -91,6 +94,12 @@ function App() {
 
     }
 
+    function handleStartCombat(world, level) {
+            setCurrentWorld(world+1);
+            setCurrentLevel(level+1);
+            setScreenState("Combat");
+    }
+
     // Return the currently selected screen:
     return (
         <div>
@@ -104,6 +113,9 @@ function App() {
             <MapCanvas onOpenCatBot={() => setScreenState("CatBot")} 
             toggleMute={toggleMute}
             isMuted={isMuted}
+            currentWorld={currentWorld}
+            currentLevel={currentLevel}
+            onStartCombat={handleStartCombat}
             />
         )}
         {screenState === "CatBot" && (
@@ -113,10 +125,14 @@ function App() {
             />
         )}
         {screenState === "Combat" && (
-            <CombatCanvas returnToMap={() => setScreenState("Map")}
-            toggleMute={toggleMute}
-            isMuted={isMuted}
+            <CombatCanvas
+                returnToMap={() => setScreenState("Map")}
+                toggleMute={toggleMute}
+                isMuted={isMuted}
+                world={currentWorld}
+                level={currentLevel}
             />
+            
         )}
         </div>
     );
