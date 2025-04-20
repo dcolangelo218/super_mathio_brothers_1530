@@ -10,16 +10,16 @@ import "./GameCanvas.css";
  * 
  * @returns The updated canvas based on it's state.
  */
-const TitleAndWorldCanvas = () => {
+const TitleAndWorldCanvas = ({ onOpenCatBot }) => {
 
     // Load the canvas reference objects and assign the initial states:
     const uiCanvasRef = useRef(null); // UI Canvas
     const bgCanvasRef = useRef(null); // Background Canvas
     const mgCanvasRef = useRef(null); // Middle ground canvas (not UI asset, not default background)
     const currentMusicRef = useRef(null) // References the current music playing
-    const [screenState, setScreenState] = useState("Title"); // State will either be "Title", "WorldMap", "Level", or "CatBot"
-    const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button
+    const [worldsLoaded, setWorldsLoaded] = useState(false); // State to track if the map screen is loaded
     const [worldSelected, setSelectedWorld] = useState("None"); // Tracks if a level has been selected, "Algebra", "Stats", "Calc", or "Physics"
+    const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button
 
     // Pre-Load ALL images:
     const backgroundImage = new Image();
@@ -115,7 +115,7 @@ const TitleAndWorldCanvas = () => {
     }, [])
 
     /**
-     * When screenState changes, update the canvas(s).
+     * When worldsLoaded changes, update the canvas(s).
      */
     useEffect(() => {
 
@@ -128,12 +128,12 @@ const TitleAndWorldCanvas = () => {
         const mgCtx = mgCanvas.getContext("2d");
         const uiCtx = uiCanvas.getContext("2d");
 
-        // If the screenState is changed to "WorldMap", render the world map:
-        if (screenState === "WorldMap") {
+        // If the worlds loaded is changed to true, render the world map:
+        if (worldsLoaded === true) {
             drawWorldMap(mgCtx, uiCtx, mgCanvas, uiCanvas);
         }
 
-    }, [screenState])
+    }, [worldsLoaded])
     
     /**
      * A function for rendering the default background with the title. 
@@ -366,9 +366,9 @@ const TitleAndWorldCanvas = () => {
         // If the "Enter" key is pressed:
         if(event.key === "Enter") {
             // If the screen is on the title screen, render the world map:
-            if (screenState === "Title") {
+            if (worldsLoaded === false) {
                 cancelAnimationFrame(animationFrameId);
-                setScreenState("WorldMap");
+                setWorldsLoaded(true);
             }
         }
 
@@ -402,7 +402,7 @@ const TitleAndWorldCanvas = () => {
             {worldSelected !== "None" && 
             (<img
             src= "/CatBotButton.png"
-            onClick={() => setScreenState("CatBot")}
+            onClick={onOpenCatBot}
             style={{
             position: "absolute",
             top: "73.5%",
@@ -413,7 +413,7 @@ const TitleAndWorldCanvas = () => {
             />)}
 
             {/* Algebraia Button */}
-            {screenState === "WorldMap" && 
+            {worldsLoaded === true && 
             (<img
             src= "/Algebraia.png"
             onClick={renderAlgebra}
@@ -427,7 +427,7 @@ const TitleAndWorldCanvas = () => {
             />)}
 
             {/* Statstrider Button */}
-            {screenState === "WorldMap" && 
+            {worldsLoaded === true && 
             (<img
             src= "/SS-Statstrider.png"
             onClick={renderStats}
@@ -441,7 +441,7 @@ const TitleAndWorldCanvas = () => {
             />)}
 
             {/* Calcomet Button */}
-            {screenState === "WorldMap" && 
+            {worldsLoaded === true && 
             (<img
             src= "/The-Calcomet.png"
             onClick={renderCalc}
@@ -455,7 +455,7 @@ const TitleAndWorldCanvas = () => {
             />)}
 
             {/* Physix Button */}
-            {screenState === "WorldMap" && 
+            {worldsLoaded === true && 
             (<img
             src= "/PhysiX-1.png"
             onClick={renderPhysics}
