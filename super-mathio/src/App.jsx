@@ -95,9 +95,20 @@ function App() {
     }
 
     function handleStartCombat(world, level) {
-            setCurrentWorld(world+1);
-            setCurrentLevel(level+1);
+            setCurrentWorld(world);
+            setCurrentLevel(level);
             setScreenState("Combat");
+    }
+
+    function handleLevelComplete() {
+        setCurrentLevel(prev => {
+            if (prev >= 4) {
+                setCurrentWorld(w => w + 1);
+                return 0;
+            }
+            return prev + 1;
+        });
+        setScreenState("Map");
     }
 
     // Return the currently selected screen:
@@ -131,6 +142,7 @@ function App() {
                 isMuted={isMuted}
                 world={currentWorld}
                 level={currentLevel}
+                onLevelComplete={handleLevelComplete}
             />
             
         )}

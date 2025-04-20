@@ -10,13 +10,17 @@ import "./GameCanvas.css";
  * 
  * @returns The updated canvas based on it's state.
  */
-const CombatCanvas = ({ returnToMap, toggleMute, isMuted }) => {
+const CombatCanvas = ({ returnToMap, toggleMute, isMuted, world, level, onLevelComplete}) => {
 
     // Load the canvas reference objects and assign the initial screen state:
     const uiCanvasRef = useRef(null); // UI Canvas
     const bgCanvasRef = useRef(null); // Background Canvas
     const mgCanvasRef = useRef(null); // Middle ground canvas (not UI asset, not default background)
-    const currentMusicRef = useRef(null) // References the current music playing
+
+    const [enemy, setEnemy] = useState(null);
+    const [userAnswer, setUserAnswer] = useState("");
+    const [wrong, setWrong] = useState(false);
+    const [dying, setDying] = useState(false);
 
     // Pre-Loading images:
     const world1Background = new Image();
@@ -78,9 +82,50 @@ const CombatCanvas = ({ returnToMap, toggleMute, isMuted }) => {
 
         //add more visuals and some inputs here later
 
+        
         //return things we dont need anymore here
 
     }, [])
+
+    useEffect(() => {
+        // fetch a question+png for this world/level
+        fetch(`/api/enemy?world=${world}&level=${level}`)
+          .then(res => res.json())
+          .then(data => {
+            setEnemy(data); // { question, answer, png }
+          })
+          .catch(console.error);
+      }, [world, level]);
+    
+      // draw background & player once enemy is loaded
+      useEffect(() => {
+        if (!enemy) return;
+        const bgCanvas = bgCanvasRef.current;
+        const bgCtx = bgCanvas.getContext("2d");
+        const mgCanvas = mgCanvasRef.current;
+        const mgCtx = mgCanvas.getContext("2d");
+        const img = new Image();
+        img.src = EnemyPlaceholder.png;
+        img.onload = () => {
+          bgCanvas.width = mgCanvas.width = 1920;
+          bgCanvas.height = mgCanvas.height = 1080;
+          bgCtx.clearRect(0,0,1920,1080);
+          bgCtx.drawImage(img, 760, 200);   // arbitrary pos
+        };
+      }, [enemy]);
+    
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (userAnswer.trim().toLowerCase() === enemy.answer.trim().toLowerCase()) {
+          setDying(true);
+          setTimeout(() => {
+            setDying(false);
+            onLevelComplete();
+          }, 1000);
+        } else {
+          setWrong(true);
+        }
+      }
 
     //Return current canvases:
     return(
@@ -132,6 +177,25 @@ const CombatCanvas = ({ returnToMap, toggleMute, isMuted }) => {
                 onClick={returnToMap} 
                 > ⬅ Back to Map
             </button>
+
+            {/* Enemy UI */}
+            <div style={{ position:"absolute", zIndex:3, top:0, left:0, width:"100%" }}>
+                {enemy && !dying && (
+                <div>
+                    <p>Enemy asks: {enemy.question}</p>
+                    <form onSubmit={handleSubmit}>
+                    <input
+                        value={userAnswer}
+                        onChange={e => { setUserAnswer(e.target.value); setWrong(false); }}
+                        placeholder="Your answer"
+                    />
+                    <button type="submit">Answer</button>
+                    </form>
+                    {wrong && <p style={{color:"red"}}>Incorrect, try again.</p>}
+                </div>
+                )}
+                {dying && <p>Enemy defeated!</p>}
+            </div>
 
 
         </div>
