@@ -17,7 +17,8 @@ create domain question_type as varchar(4)
 create table questions(
     type question_type not null,
     question text not null,
-    constraint pk_question primary key (type, question)
+    answer text not null,
+    constraint pk_question primary key (type, question, answer)
 );
 
 --Player
