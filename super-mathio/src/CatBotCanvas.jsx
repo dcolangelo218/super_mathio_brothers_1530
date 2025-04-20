@@ -4,14 +4,14 @@
  */
 import { useEffect, useRef, useState } from "react";
 import "./GameCanvas.css";
-import "./TitleAndWorldCanvas.jsx";
+import "./MapCanvas.jsx";
 
 /**
  * Where the Cat Bot Lesson Canvas is displayed.
  * 
  * @returns The updated canvas based on it's state.
  */
-const CatBotCanvas = ({ returnToMap }) => { 
+const CatBotCanvas = ({ returnToMap, toggleMute, isMuted }) => { 
 
     // Load the canvas reference objects and assign the initial states:
     const [messages, setMessages] = useState([
@@ -44,7 +44,7 @@ const CatBotCanvas = ({ returnToMap }) => {
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
               method: "POST",
               headers: {
-                "Authorization": `Bearer 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`,
+                "Authorization": `Bearer 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`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
@@ -55,13 +55,13 @@ const CatBotCanvas = ({ returnToMap }) => {
       
             // The AI response and reply:
             const data = await response.json();
-            //console.log("OpenAI response error:", data);
+            console.log("OpenAI response error:", data);
             const aiReply = data.choices[0].message;
       
             // If a response isnt able to be loaded, indicate that no message was returned:
             if (!aiReply || !aiReply.content) {
                 console.error("CatBot returned no message:", data);
-                setMessages(prev => [...prev, { role: "assistant", content: "[CatBot was too sleepy to reply! 🐱💤]" }]);
+                setMessages(prev => [...prev, { role: "assistant", content: "It seems that CatBot is currently out of power...!" }]);
                 return;
             }
             

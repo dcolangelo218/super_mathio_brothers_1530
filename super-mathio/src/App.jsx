@@ -1,26 +1,118 @@
 /**
  * Import needed files/libraries/ect.
- * GameCanvas is where and how the game is rendered.
  */
-import { useState } from "react";
-import TitleAndWorldCanvas from "./TitleAndWorldCanvas";
+import { useState, useRef, useEffect, useMemo } from "react";
 import CatBotCanvas from "./CatBotCanvas";
+import TitleCanvas from "./TitleCanvas";
+import MapCanvas from "./MapCanvas";
 
 function App() {
 
-  // Set the state of the screen
-  const [screenState, setScreenState] = useState("TitleAndWorlds"); // or "CatBot" or "Combat"
+    // Set the state of the screen:
+    const [screenState, setScreenState] = useState("Title"); // "Title" or "Map" or "CatBot" or "Combat"
+    const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button
+    const currentMusicRef = useRef(null) // References the current music playing
+    
+    // Load ALL tracks only once:
+    // Only create these once
+    const titleAndMapTrack = useMemo(() => {
+        const audio = new Audio("/MainScreen-SpaceTravel.mp3");
+        audio.loop = true;
+        return audio;
+    }, []);
 
-  return (
-    <div>
-      {screenState === "TitleAndWorlds" && (
-        <TitleAndWorldCanvas onOpenCatBot={() => setScreenState("CatBot")} />
-      )}
-      {screenState === "CatBot" && (
-        <CatBotCanvas returnToMap={() => setScreenState("TitleAndWorlds")}/>
-      )}
-    </div>
-  );
+    const catBotTrack = useMemo(() => {
+        const audio = new Audio("/CatBotLesson.mp3"); //
+        audio.loop = true;
+        return audio;
+    }, []);
+    //const combatTrack;
+   
+    /**
+     * A use effect to set the initial track to the title and map track
+     */
+    useEffect(() => {
+
+        const titleMusic = titleAndMapTrack;
+        titleMusic.loop = true;
+    
+        // Only set this once:
+        currentMusicRef.current = titleMusic;
+
+    }, []);
+    
+
+    // Use effect to handle music playback on screen change
+    useEffect(() => {
+
+        // Declare music variables:
+        let currentTrack = currentMusicRef.current;
+        let newTrack;
+
+        if (screenState === "Map" || screenState === "Title") {
+            newTrack = titleAndMapTrack;
+        } else if (screenState === "CatBot") {
+            newTrack = catBotTrack;
+        }
+
+        // If same as before, no need to restart:
+        if (currentTrack === newTrack) return;
+
+        // Stop the previous track:
+        if (currentTrack) {
+            currentTrack.pause();
+            currentTrack.currentTime = 0;
+        }
+
+        // Set and play new track:
+        currentMusicRef.current = newTrack;
+        currentMusicRef.current.play().catch((err) => console.warn("Autoplay failed:", err));
+
+    }, [screenState]);
+
+    /**
+     * Mutes or unmutes music:
+     */
+    function toggleMute(){
+
+        // See if there is music loaded:
+        const music = currentMusicRef.current;
+        if (!music) return;
+
+        // Toggle music:
+        if (isMuted) {
+            music.play().catch(err => console.warn("Autoplay failed:", err));
+          } 
+        else {
+            music.pause();
+        }
+        setIsMuted(!isMuted);
+
+    }
+
+    // Return the currently selected screen:
+    return (
+        <div>
+        {screenState === "Title" && (
+            <TitleCanvas openMap={() => setScreenState("Map")} 
+            toggleMute={toggleMute}
+            isMuted={isMuted}
+            />
+        )}
+        {screenState === "Map" && (
+            <MapCanvas onOpenCatBot={() => setScreenState("CatBot")} 
+            toggleMute={toggleMute}
+            isMuted={isMuted}
+            />
+        )}
+        {screenState === "CatBot" && (
+            <CatBotCanvas returnToMap={() => setScreenState("Map")}
+            toggleMute={toggleMute}
+            isMuted={isMuted}
+            />
+        )}
+        </div>
+    );
 }
 
 export default App;
