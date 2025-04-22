@@ -336,7 +336,7 @@ const MapCanvas = ({ onOpenCatBot, toggleMute, isMuted, currentWorld, currentLev
                 const worldIndex = worldIndices[worldSelected];
                 const unlocked =
                     worldIndex < currentWorld ||
-                    (worldIndex === currentWorld && i < currentLevel);
+                    (worldIndex === currentWorld && i <= currentLevel);
 
                 return (
                     <div

@@ -14,8 +14,12 @@ function App() {
     const [isMuted, setIsMuted] = useState(true); // Tracks the state of the mute button
     const currentMusicRef = useRef(null) // References the current music playing
     
-    const [currentWorld, setCurrentWorld] = useState(1);
-    const [currentLevel, setCurrentLevel] = useState(1);
+    const [currentWorld, setCurrentWorld] = useState(null);
+    const [currentLevel, setCurrentLevel] = useState(null);
+
+    const [unlockedWorld, setUnlockedWorld] = useState(1); 
+    const [unlockedLevel, setUnlockedLevel] = useState(2);
+    
 
     // Load ALL tracks only once:
     // Only create these once
@@ -42,13 +46,30 @@ function App() {
      */
     useEffect(() => {
 
-        const titleMusic = titleAndMapTrack;
-        titleMusic.loop = true;
-    
-        // Only set this once:
-        currentMusicRef.current = titleMusic;
+        const currentTrack = currentMusicRef.current;
+        let newTrack;
+        if (screenState === "Map" || screenState === "Title") {
+        newTrack = titleAndMapTrack;
+        } else if (screenState === "CatBot") {
+        newTrack = catBotTrack;
+        } else if (screenState === "Combat") {
+        newTrack = combatTrack;
+        }
 
-    }, []);
+        if (currentTrack === newTrack) return;
+
+        if (currentTrack) {
+        currentTrack.pause();
+        currentTrack.currentTime = 0;
+        }
+
+        currentMusicRef.current = newTrack;
+        if (!isMuted) {
+        currentMusicRef.current
+            .play()
+            .catch((err) => console.warn("Autoplay failed:", err));
+        }
+    }, [screenState, isMuted]);
     
 
     // Use effect to handle music playback on screen change
@@ -108,9 +129,9 @@ function App() {
     }
 
     function handleLevelComplete() {
-        setCurrentLevel(prev => {
+        setUnlockedLevel(prev => {
             if (prev >= 4) {
-                setCurrentWorld(w => w + 1);
+                setUnlockedWorld(w => w + 1);
                 return 0;
             }
             return prev + 1;
@@ -131,8 +152,8 @@ function App() {
             <MapCanvas onOpenCatBot={() => setScreenState("CatBot")} 
             toggleMute={toggleMute}
             isMuted={isMuted}
-            currentWorld={currentWorld}
-            currentLevel={currentLevel}
+            currentWorld={unlockedWorld}
+            currentLevel={unlockedLevel}
             onStartCombat={handleStartCombat}
             />
         )}
