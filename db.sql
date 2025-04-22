@@ -60,7 +60,7 @@ insert into questions values
 ('STAT', 'What is the mean of 2, 4, 6, 8, 10?', '6'),
 ('STAT', 'What is the median of 1, 3, 5, 7, 9?', '5'),
 ('STAT', 'What is the mode of 1, 2, 2, 3, 4?', '2'),
-('STAT', 'What is the formula for variance?', 'σ² = Σ(x - μ)² / N'),
+('STAT', 'What is the formula for the mean of a data set?', 'Sum of values divided by the number of values'),
 ('STAT', 'What is the standard deviation?', 'Square root of variance'),
 ('STAT', 'What is the probability of flipping heads on a coin?', '0.5'),
 ('STAT', 'What is a histogram used for?', 'Displaying frequency distribution'),
