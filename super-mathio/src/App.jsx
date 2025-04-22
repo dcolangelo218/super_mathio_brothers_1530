@@ -30,7 +30,12 @@ function App() {
         audio.loop = true;
         return audio;
     }, []);
-    //const combatTrack;
+
+    const combatTrack = useMemo(() => {
+        const audio = new Audio("/Combat.mp3"); //
+        audio.loop = true;
+        return audio;
+    }, []);
    
     /**
      * A use effect to set the initial track to the title and map track
@@ -57,6 +62,8 @@ function App() {
             newTrack = titleAndMapTrack;
         } else if (screenState === "CatBot") {
             newTrack = catBotTrack;
+        } else if (screenState === "Combat") {
+            newTrack = combatTrack;
         }
 
         // If same as before, no need to restart:
