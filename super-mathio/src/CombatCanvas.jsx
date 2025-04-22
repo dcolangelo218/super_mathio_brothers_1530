@@ -77,13 +77,8 @@ const CombatCanvas = ({ returnToMap, toggleMute, isMuted, world, level, onLevelC
         }
 
         playerImage.onload = () => {
-            mgCtx.drawImage(playerImage, 0, 0, 200, 200); //maybe replace width and height with something non-static(as in stored somewhere; technically still static) later
+            mgCtx.drawImage(playerImage, 300, 600, 350, 350); //maybe replace width and height with something non-static(as in stored somewhere; technically still static) later
         }
-
-        //add more visuals and some inputs here later
-
-        
-        //return things we dont need anymore here
 
     }, [])
 
@@ -139,14 +134,11 @@ const CombatCanvas = ({ returnToMap, toggleMute, isMuted, world, level, onLevelC
 
             <label>
                 Fight back!
-                <div className = "input-bar" style={{ zIndex: 4 }}>
-                    <div className = "input-bar button" style = {{ position: "relative", top: 0, left: 1, zIndex: 4}} />
-                    <div className = "input-bar input" />
-                </div>
+                <input name="myInput" style={{position: "absolute", top: "90%", left: "50%", zIndex: 50, color: "black"}}/>
             </label>
 
-             {/* Music Start Button */}
-             <img
+             /* Music Start Button */
+            <img
             src={isMuted ? "/isMuted.png" : "/isNotMuted.png"}
             alt={isMuted ? "Unmute" : "Mute"}
             onClick={toggleMute}
@@ -160,23 +152,17 @@ const CombatCanvas = ({ returnToMap, toggleMute, isMuted, world, level, onLevelC
             />
 
             {/* Return Button */}
-            <button
-                style={{
-                    position: "absolute",
-                    top: "20px",
-                    left: "20px",
-                    zIndex: 10,
-                    padding: "0.5rem 1rem",
-                    fontSize: "1rem",
-                    backgroundColor: "#444",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer"
-                }}
-                onClick={returnToMap} 
-                > ⬅ Back to Map
-            </button>
+            <img src="/EnterButton.png" //put onclick thing on next line e.g. onClick={renderCalc}
+            style={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            zIndex: 10,
+            fontSize: "1rem",
+            cursor: "pointer"
+            }}
+            //onClick={returnToMap} 
+            /> ⬅ Back to Map
 
             {/* Enemy UI */}
             <div style={{ position:"absolute", zIndex:3, top:0, left:0, width:"100%" }}>
